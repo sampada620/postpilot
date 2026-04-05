@@ -1,7 +1,5 @@
+export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import bcrypt from 'bcryptjs'
-import { createToken } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,6 +19,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const { db } = await import('@/lib/db')
+    const bcrypt = await import('bcryptjs')
+    const { createToken } = await import('@/lib/auth')
+
     const existing = await db.user.findUnique({ where: { email } })
     if (existing) {
       return NextResponse.json(
@@ -34,22 +36,17 @@ export async function POST(req: NextRequest) {
       data: { name, email, password: hashedPassword }
     })
 
-    // Create default workspace for new user
     await db.workspace.create({
       data: {
         name: `${name}'s Workspace`,
         plan: 'free',
         members: {
-          create: {
-            userId: user.id,
-            role: 'owner'
-          }
+          create: { userId: user.id, role: 'owner' }
         }
       }
     })
 
     const token = createToken(user.id)
-
     const response = NextResponse.json({
       success: true,
       user: { id: user.id, email: user.email, name: user.name }
@@ -59,7 +56,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+      maxAge: 60 * 60 * 24 * 7
     })
 
     return response

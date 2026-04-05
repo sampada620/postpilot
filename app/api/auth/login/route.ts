@@ -1,7 +1,5 @@
+export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import bcrypt from 'bcryptjs'
-import { createToken } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,6 +11,11 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Dynamic imports to avoid build-time errors
+    const { db } = await import('@/lib/db')
+    const bcrypt = await import('bcryptjs')
+    const { createToken } = await import('@/lib/auth')
 
     const user = await db.user.findUnique({ where: { email } })
     if (!user || !user.password) {

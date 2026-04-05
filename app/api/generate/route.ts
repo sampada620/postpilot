@@ -8,6 +8,7 @@ const platformPrompts: Record<string, string> = {
   'Instagram':  'Write an Instagram caption of 100 words with line breaks. End with 8 hashtags.',
 }
 
+export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.GROQ_API_KEY) {

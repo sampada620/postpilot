@@ -1,8 +1,8 @@
+export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
 // This simulates publishing — in production this would call real APIs
-export const dynamic = 'force-dynamic'
 export async function POST() {
   try {
     // Find all pending posts that are due
